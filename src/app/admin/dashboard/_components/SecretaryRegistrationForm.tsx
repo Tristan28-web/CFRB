@@ -74,7 +74,7 @@ export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRe
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="Juan Dela Cruz" {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,7 +87,7 @@ export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRe
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="secretary@example.com" {...field} />
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,7 +100,7 @@ export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRe
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
