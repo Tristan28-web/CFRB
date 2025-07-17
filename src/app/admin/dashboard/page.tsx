@@ -2,7 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserPlus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { LoaderCircle, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SecretaryRegistrationForm } from './_components/SecretaryRegistrationForm';
 import { RecentRegistrations } from './_components/RecentRegistrations';
@@ -18,23 +19,38 @@ export interface Secretary {
 }
 
 const SECRETARIES_STORAGE_KEY = 'secretaries_list';
+const ADMIN_LOGGED_IN_KEY = 'isAdminLoggedIn';
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [secretaries, setSecretaries] = useState<Secretary[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Check auth status
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem(ADMIN_LOGGED_IN_KEY);
+    if (isLoggedIn !== 'true') {
+      router.replace('/login/admin');
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [router]);
 
   // Load secretaries from localStorage on initial render
   useEffect(() => {
-    try {
-      const storedSecretaries = localStorage.getItem(SECRETARIES_STORAGE_KEY);
-      if (storedSecretaries) {
-        setSecretaries(JSON.parse(storedSecretaries));
+    if (!isCheckingAuth) {
+      try {
+        const storedSecretaries = localStorage.getItem(SECRETARIES_STORAGE_KEY);
+        if (storedSecretaries) {
+          setSecretaries(JSON.parse(storedSecretaries));
+        }
+      } catch (error) {
+        console.error('Failed to parse secretaries from localStorage', error);
       }
-    } catch (error) {
-      console.error('Failed to parse secretaries from localStorage', error);
+      setIsLoaded(true);
     }
-    setIsLoaded(true);
-  }, []);
+  }, [isCheckingAuth]);
 
   // Save secretaries to localStorage whenever the list changes
   useEffect(() => {
@@ -62,8 +78,12 @@ export default function AdminDashboard() {
     // In a real app, this would open a modal or navigate to an edit page
   };
 
-  if (!isLoaded) {
-    return <div>Loading...</div>; // Or a spinner component
+  if (isCheckingAuth || !isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-muted/50">
+        <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+       </div>
+    );
   }
 
   return (

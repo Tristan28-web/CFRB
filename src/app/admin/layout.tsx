@@ -1,12 +1,25 @@
+
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { UserCircle } from 'lucide-react';
+import { UserCircle, LogOut } from 'lucide-react';
+
+const ADMIN_LOGGED_IN_KEY = 'isAdminLoggedIn';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem(ADMIN_LOGGED_IN_KEY);
+    router.push('/login/admin');
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 justify-between">
@@ -20,8 +33,9 @@ export default function AdminLayout({
             Admin Portal
           </Link>
         </nav>
-        <Button asChild variant="outline">
-          <Link href="/login">Logout</Link>
+        <Button onClick={handleLogout} variant="outline" size="sm">
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
         </Button>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">

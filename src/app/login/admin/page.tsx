@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,6 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Scale } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
+
+const ADMIN_LOGGED_IN_KEY = 'isAdminLoggedIn';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -22,14 +25,24 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem(ADMIN_LOGGED_IN_KEY);
+    if (isLoggedIn === 'true') {
+      router.replace('/admin/dashboard');
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [router]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate network delay
     setTimeout(() => {
       if (email === 'admin@gmail.com' && password === '123') {
+        localStorage.setItem(ADMIN_LOGGED_IN_KEY, 'true');
         router.push('/admin/dashboard');
       } else {
         toast({
@@ -41,6 +54,14 @@ export default function AdminLoginPage() {
       }
     }, 500);
   };
+  
+  if (isCheckingAuth) {
+    return (
+       <div className="flex items-center justify-center min-h-screen bg-muted/50">
+        <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+       </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted/50">
@@ -79,6 +100,7 @@ export default function AdminLoginPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
