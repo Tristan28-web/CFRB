@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,7 +35,7 @@ const formSchema = z.object({
 });
 
 interface SecretaryRegistrationFormProps {
-    onSecretaryRegistered: (secretary: Omit<Secretary, 'status'>) => void;
+    onSecretaryRegistered: (secretary: Omit<Secretary, 'status' | 'id' | 'role'>) => void;
 }
 
 export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRegistrationFormProps) {
@@ -71,7 +72,14 @@ export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRe
         title: 'Registration Successful',
         description: `Secretary ${result.user?.name} has been registered.`,
       });
-      onSecretaryRegistered(result.user);
+      // Pass the user data from the action, plus the form data not in the action
+      onSecretaryRegistered({
+        ...result.user,
+        age: parseInt(values.age, 10),
+        birthday: values.birthday,
+        location: values.location,
+        zipCode: values.zipCode,
+      });
       form.reset();
     }
   }

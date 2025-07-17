@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -20,6 +21,10 @@ interface ActionResult {
     name: string;
     email: string;
     role: 'secretary';
+    age: number;
+    birthday: string;
+    location: string;
+    zipCode: string;
   };
   error?: string;
 }
@@ -37,7 +42,7 @@ export async function registerSecretaryAction(
     return { error: `Invalid fields provided: ${errorMessages}` };
   }
   
-  const { firstName, middleName, lastName, email } = validatedFields.data;
+  const { firstName, middleName, lastName, email, age, birthday, location, zipCode } = validatedFields.data;
 
   // Combine names for display
   const name = [firstName, middleName, lastName].filter(Boolean).join(' ');
@@ -59,6 +64,10 @@ export async function registerSecretaryAction(
     name, // The combined name
     email,
     role: 'secretary' as const,
+    age: parseInt(age, 10),
+    birthday,
+    location,
+    zipCode
   };
 
   return { user: newUser };
