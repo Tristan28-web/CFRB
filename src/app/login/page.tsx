@@ -22,7 +22,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <Button asChild>
-            <Link href="/admin/dashboard">Admin Login</Link>
+            <Link href="/login/admin">Admin Login</Link>
           </Button>
           <Button asChild variant="secondary">
             <Link href="/secretary/dashboard">Secretary Login</Link>
