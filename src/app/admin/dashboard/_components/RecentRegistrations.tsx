@@ -8,27 +8,51 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { Secretary } from '../page';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import type { Secretary, SecretaryStatus } from '../page';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { MoreHorizontal } from 'lucide-react';
 
 interface RecentRegistrationsProps {
   secretaries: Secretary[];
+  onUpdateStatus: (secretaryId: string, status: SecretaryStatus) => void;
+  onEdit: (secretaryId: string) => void;
 }
 
-export function RecentRegistrations({ secretaries }: RecentRegistrationsProps) {
+const statusVariant: Record<SecretaryStatus, 'default' | 'secondary' | 'destructive'> = {
+  active: 'default',
+  on_leave: 'secondary',
+  inactive: 'destructive',
+};
+
+
+export function RecentRegistrations({ secretaries, onUpdateStatus, onEdit }: RecentRegistrationsProps) {
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>User</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead className="text-right">Email</TableHead>
+            <TableHead>
+                <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {secretaries.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={2} className="h-24 text-center">
+              <TableCell colSpan={4} className="h-24 text-center">
                 No new secretaries registered yet.
               </TableCell>
             </TableRow>
@@ -43,7 +67,31 @@ export function RecentRegistrations({ secretaries }: RecentRegistrationsProps) {
                     <div className="font-medium">{secretary.name}</div>
                   </div>
                 </TableCell>
+                <TableCell>
+                  <Badge variant={statusVariant[secretary.status]} className="capitalize">
+                      {secretary.status.replace('_', ' ')}
+                  </Badge>
+                </TableCell>
                 <TableCell className="text-right">{secretary.email}</TableCell>
+                <TableCell className="text-right">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                             <DropdownMenuItem onClick={() => onEdit(secretary.id)}>
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => onUpdateStatus(secretary.id, 'active')}>Set Active</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onUpdateStatus(secretary.id, 'on_leave')}>Set On Leave</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </TableCell>
               </TableRow>
             ))
           )}

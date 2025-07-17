@@ -34,7 +34,7 @@ const formSchema = z.object({
 });
 
 interface SecretaryRegistrationFormProps {
-    onSecretaryRegistered: (secretary: Secretary) => void;
+    onSecretaryRegistered: (secretary: Omit<Secretary, 'status'>) => void;
 }
 
 export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRegistrationFormProps) {

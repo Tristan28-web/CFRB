@@ -6,19 +6,38 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SecretaryRegistrationForm } from './_components/SecretaryRegistrationForm';
 import { RecentRegistrations } from './_components/RecentRegistrations';
 
+export type SecretaryStatus = 'active' | 'on_leave' | 'inactive';
+
 export interface Secretary {
   id: string;
   name: string;
   email: string;
   role: 'secretary';
+  status: SecretaryStatus;
 }
 
 export default function AdminDashboard() {
   const [secretaries, setSecretaries] = useState<Secretary[]>([]);
 
-  const handleSecretaryRegistered = (newSecretary: Secretary) => {
-    setSecretaries((prev) => [newSecretary, ...prev]);
+  const handleSecretaryRegistered = (newSecretary: Omit<Secretary, 'status'>) => {
+    const secretaryWithStatus: Secretary = { ...newSecretary, status: 'active' };
+    setSecretaries((prev) => [secretaryWithStatus, ...prev]);
   };
+
+  const handleUpdateSecretaryStatus = (secretaryId: string, status: SecretaryStatus) => {
+    setSecretaries(prev => 
+      prev.map(sec => 
+        sec.id === secretaryId ? { ...sec, status } : sec
+      )
+    );
+  };
+
+  const handleEditSecretary = (secretaryId: string) => {
+    // Placeholder for edit functionality
+    console.log(`Editing secretary ${secretaryId}`);
+    // In a real app, this would open a modal or navigate to an edit page
+  };
+
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -42,7 +61,11 @@ export default function AdminDashboard() {
             <CardTitle>Recent Registrations</CardTitle>
           </CardHeader>
           <CardContent>
-            <RecentRegistrations secretaries={secretaries} />
+            <RecentRegistrations 
+              secretaries={secretaries}
+              onUpdateStatus={handleUpdateSecretaryStatus}
+              onEdit={handleEditSecretary}
+            />
           </CardContent>
         </Card>
       </div>
