@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { registerSecretaryAction } from '../../actions';
 import { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import type { Secretary } from '../page';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -26,7 +27,11 @@ const formSchema = z.object({
     .min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
-export function SecretaryRegistrationForm() {
+interface SecretaryRegistrationFormProps {
+    onSecretaryRegistered: (secretary: Secretary) => void;
+}
+
+export function SecretaryRegistrationForm({ onSecretaryRegistered }: SecretaryRegistrationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,11 +54,12 @@ export function SecretaryRegistrationForm() {
         title: 'Registration Failed',
         description: result.error,
       });
-    } else {
+    } else if (result.user) {
       toast({
         title: 'Registration Successful',
         description: `Secretary ${result.user?.name} has been registered.`,
       });
+      onSecretaryRegistered(result.user);
       form.reset();
     }
   }
