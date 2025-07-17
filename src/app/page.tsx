@@ -13,7 +13,7 @@ export default function Home() {
       </main>
       <footer className="py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Your Company. All Rights Reserved.
+          © {new Date().getFullYear()} CFRB. All Rights Reserved.
         </div>
       </footer>
     </div>
