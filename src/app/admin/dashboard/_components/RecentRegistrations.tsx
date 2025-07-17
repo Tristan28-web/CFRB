@@ -87,6 +87,7 @@ export function RecentRegistrations({ secretaries, onUpdateStatus, onEdit }: Rec
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => onUpdateStatus(secretary.id, 'active')}>Set Active</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => onUpdateStatus(secretary.id, 'on_leave')}>Set On Leave</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onUpdateStatus(secretary.id, 'inactive')}>Set Inactive</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </TableCell>
