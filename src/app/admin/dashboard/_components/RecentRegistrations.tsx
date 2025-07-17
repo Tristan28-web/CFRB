@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 interface RecentRegistrationsProps {
   secretaries: Secretary[];
@@ -44,9 +44,7 @@ export function RecentRegistrations({ secretaries, onUpdateStatus, onEdit }: Rec
             <TableHead>User</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Email</TableHead>
-            <TableHead>
-                <span className="sr-only">Actions</span>
-            </TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,9 +74,9 @@ export function RecentRegistrations({ secretaries, onUpdateStatus, onEdit }: Rec
                 <TableCell className="text-right">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
+                            <Button variant="outline" size="sm">
+                                Manage
+                                <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
