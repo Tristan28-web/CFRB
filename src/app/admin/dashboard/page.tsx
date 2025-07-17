@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SecretaryRegistrationForm } from './_components/SecretaryRegistrationForm';
@@ -16,8 +17,31 @@ export interface Secretary {
   status: SecretaryStatus;
 }
 
+const SECRETARIES_STORAGE_KEY = 'secretaries_list';
+
 export default function AdminDashboard() {
   const [secretaries, setSecretaries] = useState<Secretary[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load secretaries from localStorage on initial render
+  useEffect(() => {
+    try {
+      const storedSecretaries = localStorage.getItem(SECRETARIES_STORAGE_KEY);
+      if (storedSecretaries) {
+        setSecretaries(JSON.parse(storedSecretaries));
+      }
+    } catch (error) {
+      console.error('Failed to parse secretaries from localStorage', error);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save secretaries to localStorage whenever the list changes
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(SECRETARIES_STORAGE_KEY, JSON.stringify(secretaries));
+    }
+  }, [secretaries, isLoaded]);
 
   const handleSecretaryRegistered = (newSecretary: Omit<Secretary, 'status'>) => {
     const secretaryWithStatus: Secretary = { ...newSecretary, status: 'active' };
@@ -25,8 +49,8 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateSecretaryStatus = (secretaryId: string, status: SecretaryStatus) => {
-    setSecretaries(prev => 
-      prev.map(sec => 
+    setSecretaries(prev =>
+      prev.map(sec =>
         sec.id === secretaryId ? { ...sec, status } : sec
       )
     );
@@ -38,6 +62,9 @@ export default function AdminDashboard() {
     // In a real app, this would open a modal or navigate to an edit page
   };
 
+  if (!isLoaded) {
+    return <div>Loading...</div>; // Or a spinner component
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -61,7 +88,7 @@ export default function AdminDashboard() {
             <CardTitle>Recent Registrations</CardTitle>
           </CardHeader>
           <CardContent>
-            <RecentRegistrations 
+            <RecentRegistrations
               secretaries={secretaries}
               onUpdateStatus={handleUpdateSecretaryStatus}
               onEdit={handleEditSecretary}
