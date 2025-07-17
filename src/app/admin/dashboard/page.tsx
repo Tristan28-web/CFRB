@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoaderCircle, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +34,13 @@ export default function AdminDashboard() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [editingSecretary, setEditingSecretary] = useState<Secretary | null>(null);
 
+  // Use a ref to hold the latest state of secretaries for the beforeunload event
+  const secretariesRef = useRef(secretaries);
+  useEffect(() => {
+    secretariesRef.current = secretaries;
+  }, [secretaries]);
+
+
   // Check auth status
   useEffect(() => {
     const isLoggedIn = localStorage.getItem(ADMIN_LOGGED_IN_KEY);
@@ -59,7 +66,20 @@ export default function AdminDashboard() {
     }
   }, [isCheckingAuth]);
 
-  // Save secretaries to localStorage whenever the list changes
+  // Save secretaries to localStorage when the component unloads
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.setItem(SECRETARIES_STORAGE_KEY, JSON.stringify(secretariesRef.current));
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  // Also save when the list changes to cover SPA navigations
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem(SECRETARIES_STORAGE_KEY, JSON.stringify(secretaries));
