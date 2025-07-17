@@ -3,9 +3,15 @@
 import { z } from 'zod';
 
 const registerSecretarySchema = z.object({
+  firstName: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
+  middleName: z.string().optional(),
+  lastName: z.string().min(2, { message: 'Last name must be at least 2 characters.' }),
+  age: z.string().refine(val => !isNaN(parseInt(val, 10)) && parseInt(val, 10) > 0, { message: 'Age must be a positive number.' }),
+  birthday: z.string().min(1, { message: 'Birthday is required.' }), // Storing as string for simplicity
+  location: z.string().min(2, { message: 'Location is required.' }),
+  zipCode: z.string().min(4, { message: 'Zip code is required.' }),
   email: z.string().email(),
-  name: z.string().min(2),
-  password: z.string().min(6),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
 interface ActionResult {
@@ -26,14 +32,18 @@ export async function registerSecretaryAction(
   const validatedFields = registerSecretarySchema.safeParse(values);
 
   if (!validatedFields.success) {
-    return { error: 'Invalid fields provided.' };
+    // Construct a more detailed error message
+    const errorMessages = validatedFields.error.errors.map(e => e.message).join(' ');
+    return { error: `Invalid fields provided: ${errorMessages}` };
   }
   
-  const { name, email } = validatedFields.data;
+  const { firstName, middleName, lastName, email } = validatedFields.data;
 
-  console.log('Attempting to register secretary:');
-  console.log('Name:', name);
-  console.log('Email:', email);
+  // Combine names for display
+  const name = [firstName, middleName, lastName].filter(Boolean).join(' ');
+
+  console.log('Attempting to register secretary with detailed info:');
+  console.log(validatedFields.data);
   // Password is not logged for security reasons.
 
   // Simulate database interaction and user creation
@@ -46,7 +56,7 @@ export async function registerSecretaryAction(
 
   const newUser = {
     id: crypto.randomUUID(),
-    name,
+    name, // The combined name
     email,
     role: 'secretary' as const,
   };
